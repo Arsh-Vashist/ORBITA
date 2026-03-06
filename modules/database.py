@@ -25,7 +25,7 @@ def ingest_to_chroma(filename, collection_name):
     client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
     collection = client.get_or_create_collection(name=collection_name)
 
-    print("⏳ Ingesting... please wait\n")
+    print("Ingesting... please wait\n")
 
     doc_id = 0
     for i, article in enumerate(articles):
@@ -51,7 +51,7 @@ def ingest_to_chroma(filename, collection_name):
             print(f"❌ Failed on article {i+1}: {e}")
             continue
 
-    print(f"\n✅ Ingested {len(articles)} articles into collection: '{collection_name}'")
+    print(f"\nIngested {len(articles)} articles into collection: '{collection_name}'")
     print(f"   Total chunks stored: {doc_id}")
     return doc_id
 
