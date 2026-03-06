@@ -18,7 +18,7 @@ def run_search():
             print("No results found.")
             continue
 
-        print(f"\n🔍 Top {len(results)} results for: '{query}'")
+        print(f"\nTop {len(results)} results for: '{query}'")
         print("-" * 50)
 
         for i, r in enumerate(results, 1):
