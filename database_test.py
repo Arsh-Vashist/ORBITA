@@ -12,7 +12,7 @@ def run_test():
     print(f"DEBUG: Found {len(data)} articles in {filename}")
 
     ingest_to_chroma(filename, collection_name)
-    print(f"\n📦 Data is now stored in ChromaDB under collection: '{collection_name}'")
+    print(f"\nData is now stored in ChromaDB under collection: '{collection_name}'")
 
 if __name__ == "__main__":
     run_test()
