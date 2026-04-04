@@ -15,7 +15,7 @@ def run_test():
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=4, ensure_ascii=False)
         
-        print(f"\n✅ SUCCESS! {len(results)} articles saved to {filename}")
+        print(f"\nSUCCESS! {len(results)} articles saved to {filename}")
         print("-" * 30)
         
         for i, article in enumerate(results, 1):
@@ -24,7 +24,7 @@ def run_test():
         print("-" * 30)
         print(f"Check '{filename}' to see the full extracted text for all articles.")
     else:
-        print(f"❌ Error: {results}")
+        print(f"Error: {results}")
 
 if __name__ == "__main__":
     run_test()
