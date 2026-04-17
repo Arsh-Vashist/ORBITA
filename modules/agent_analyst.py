@@ -1,36 +1,28 @@
-from modules.database import query_chroma
 from modules.llm import ask_llm
 
-def agent_analyst(collection_name: str, topic: str) -> str:
-    
-    # Fetch top 5 relevant chunks from ChromaDB
-    results = query_chroma(collection_name, topic, top_k=5)
-    
-    # Combine all chunks into one string with source names
-    context = "\n\n".join([f"[{r['source']}]: {r['text']}" for r in results])
+def agent_analyst(collection_name: str, topic: str, nlp_results: dict = None, db_context: str = "") -> str:
+    if not nlp_results:
+        return "No NLP results available."
 
-    # Detect if topic has two sides (vs) or is a general topic
-    if " vs " in topic.lower():
-        sides = topic.lower().split(" vs ")
-        instruction = f"Extract arguments and claims made by or in favor of: {sides[0].strip().upper()}"
-    else:
-        instruction = "Extract all POSITIVE, SUPPORTING, and PRO arguments about the topic"
+    pro_articles = [a for a in nlp_results["articles"] if "Pro" in a["bias"] or a["sentiment_score"] > 0.05]
+    if not pro_articles:
+         pro_articles = sorted(nlp_results["articles"], key=lambda x: x["sentiment_score"], reverse=True)[:5]
+
+    nlp_stats_text = "\n".join([f"- [{a['source']}] {a['title']} (Score: {a['sentiment_score']:.2f}, Entities: {', '.join(a['entities']['PERSON'][:2])})" for a in pro_articles[:5]])
+
+    side_a = topic.split(" vs ")[0].strip() if " vs " in topic.lower() else topic
 
     prompt = f"""
-You are Agent A - The Analyst.
+    You are ORBITA's Analyst Agent. Your job is to construct the strongest possible SUPPORTING arguments for: {side_a}
 
-Topic: {topic}
+    Here is the manual NLP statistical data (Vader Sentiment & NER) for the most positive articles:
+    {nlp_stats_text}
+    Keywords found: {', '.join(nlp_results['keywords'][:5])}
 
-Context from News Articles:
-{context}
+    Here is the actual context retrieved from the database:
+    {db_context}
 
-Your Job: {instruction}
-
-Instructions:
-- Be specific and use facts from the articles
-- Format as numbered points
-- Do not include the opposing side
-
-Analysis:
-"""
+    Using BOTH the statistical NLP data and the text context, write a 150-word synthesis supporting {side_a}.
+    Explicitly mention the sentiment trends and key entities found by the NLP engine.
+    """
     return ask_llm(prompt)

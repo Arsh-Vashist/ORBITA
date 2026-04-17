@@ -65,7 +65,7 @@ def query_chroma(collection_name, query, top_k=5):
     try:
         collection = client.get_collection(name=collection_name)
     except Exception:
-        print(f"❌ Collection '{collection_name}' not found in ChromaDB.")
+        print(f"Collection '{collection_name}' not found in ChromaDB.")
         return []
 
     # Embed the query using the same model
