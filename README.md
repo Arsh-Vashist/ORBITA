@@ -1,88 +1,79 @@
-# ORBITA
-### Objective Reasoning And Bias Interpretation Tool for Analysis
+# ORBITA: Objective Reasoning and Bias Interpretation Tool
 
-An autonomous RAG-based multi-agent framework for cross-ideological argument mining and unbiased information synthesis.
+ORBITA is a news analysis framework designed to detect and deconstruct media bias. Unlike standard news aggregators, it uses a Multi-Agent RAG (Retrieval-Augmented Generation) system to mine arguments from different ideological perspectives and synthesize an unbiased report.
 
----
+The project was developed to address the problem of "echo chambers" by ensuring that the AI analyzes an equal distribution of supportive and critical viewpoints before reaching a conclusion.
+
+## Core Features
+
+* **Smart Query Expansion:** Uses spaCy NER to break down a user topic into multiple search queries for better coverage.
+* **Automated Stance Balancing:** Filters and balances the dataset to ensure a 50/50 split between different perspectives before ingestion.
+* **Multi-Agent Synthesis:** Uses a three-agent system (Analyst, Critic, and Arbitrator) to cross-reference facts and identify sensationalism.
+* **Bias Analytics:** Provides visual tools like a Stance Meter and Bias Radar to quantify the lean of the analyzed articles.
+* **Hallucination Check:** Compares AI-generated scores with mathematical VADER sentiment scores to ensure reliability.
 
 ## Project Structure
+
 ```
 ORBITA/
 ├── modules/
-│   ├── scraper.py        # News scraping via NewsAPI + Newspaper3k
-│   ├── database.py       # ChromaDB ingestion + search
-│   └── __init__.py
-├── test.py               # Run scraper
-├── database_test.py      # Run ChromaDB ingestion
-├── Search_test.py        # Run search queries
-├── .env                  # API keys (not pushed to GitHub)
-└── requirements.txt
+│   ├── agent_analyst.py     # Handles supportive argument mining
+│   ├── agent_critic.py      # Handles critical/opposing argument mining
+│   ├── agent_arbitrator.py   # Final synthesis with Chain-of-Thought
+│   ├── intent_decoder.py     # spaCy-based query processing
+│   ├── stance_filter.py      # Rebalances dataset (Pro/Against)
+│   ├── deduplicator.py       # Removes duplicate news entries
+│   ├── scraper.py            # NewsAPI and Newspaper4k integration
+│   ├── database.py           # ChromaDB management
+│   ├── nlp_analyzer.py       # Independent VADER/spaCy validation
+│   └── visualizer.py         # Plotly dashboard components
+├── app.py                    # Streamlit dashboard
+├── .env                      # API keys (Protected)
+└── requirements.txt          # Dependencies
 ```
 
----
+## Setup and Installation
 
-## Setup Instructions
-
-### 1. Clone the repo
-```
+### 1. Clone the Repository
+```bash
 git clone https://github.com/Arsh-Vashist/ORBITA.git
 cd ORBITA
 ```
 
-### 2. Create and activate virtual environment
-```
+### 2. Environment Setup
+```bash
 python -m venv venv
+# Activate venv (Windows)
 .\venv\Scripts\activate
-```
+# Activate venv (Mac/Linux)
+source venv/bin/activate
 
-### 3. Install dependencies
-```
 pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 ```
 
-### 4. Create `.env` file in project root
-```
+### 3. API Configuration
+Create a `.env` file in the root directory and add your keys:
+```env
 NEWS_API_KEY=your_newsapi_key_here
 GEMINI_API_KEY=your_gemini_key_here
 ```
 
----
+## Usage
 
-## How to Run
+To launch the dashboard, run:
+```bash
+streamlit run app.py
+```
 
-### Step 1 — Scrape news articles
-```
-python test.py
-```
-Enter a topic (e.g. `MODI and Carney`), then enter a filename title. Saves articles as a JSON file.
-
-### Step 2 — Ingest into ChromaDB
-```
-python database_test.py
-```
-Enter the JSON filename created in Step 1. Chunks and stores articles in ChromaDB.
-
-### Step 3 — Search the database
-```
-python Search_test.py
-```
-Enter the collection name and type any query to retrieve relevant chunks.
-
----
+1.  **Scrape & Ingest:** Enter a topic in the sidebar. The system will fetch articles, deduplicate them, and store them in ChromaDB.
+2.  **Analyze:** The engine overview will show the mathematical sentiment and top entities.
+3.  **Synthesis:** The multi-agent section will display the breakdown of arguments from both sides along with a final unbiased verdict.
 
 ## Tech Stack
-- Python 3.12
-- NewsAPI + Newspaper3k (scraping)
-- ChromaDB (vector database)
-- Sentence Transformers - all-MiniLM-L6-v2 (embeddings)
-- Gemini API (coming soon - multi-agent system)
-- LangChain (coming soon)
-- Streamlit (coming soon)
-```
 
-Replace `Arsh-Vashist` with your GitHub username. Once done, run:
-```
-git add .
-git commit -m "Initial commit - scraper, chromadb, search working"
-git remote add origin https://github.com/YOUR_USERNAME/ORBITA.git
-git push -u origin main
+* **Frontend:** Streamlit
+* **LLM:** Google Gemini Pro
+* **Database:** ChromaDB (Vector Store)
+* **NLP:** spaCy, VADER
+* **Data:** NewsAPI, Newspaper4k
