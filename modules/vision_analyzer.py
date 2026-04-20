@@ -1,12 +1,18 @@
 import os
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
+
 import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions
-from tensorflow.keras.preprocessing import image
 import numpy as np
 import requests
 from io import BytesIO
 from PIL import Image
+
+# Modern way to access Keras applications in TF 2.16+
+# Isse Pylance ko direct path mil jayega
+MobileNetV2 = tf.keras.applications.mobilenet_v2.MobileNetV2
+preprocess_input = tf.keras.applications.mobilenet_v2.preprocess_input
+decode_predictions = tf.keras.applications.mobilenet_v2.decode_predictions
+image = tf.keras.preprocessing.image
 
 # Load a pre-trained CNN model (MobileNetV2 is lightweight and fast)
 model = MobileNetV2(weights='imagenet')
